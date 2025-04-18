@@ -1,0 +1,7 @@
+<form  class="searchform fullscreen">
+    <h5 class="text">Analyse URL</h5>
+    <div style="margin-top: 8px;">
+      <input [(ngModel)]="urlToSearch" class="urlCamp" type="text" (keyup.enter)="analyseUrl()" name="setSearch" placeholder="URL">
+    </div>
+    <button style="margin-top: 16px;" type="submit" (click)="analyseUrl()">Analyse</button>
+</form>

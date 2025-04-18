@@ -36,8 +36,11 @@
 
 # Python
 /backend/venv/
+/backend/analysis/__pycache__/
 __pycache__/
 *.pyc
 
 # VS Code
 .vscode/
+
+goals.txt

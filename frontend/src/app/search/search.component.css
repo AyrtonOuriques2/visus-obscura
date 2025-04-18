@@ -1,0 +1,14 @@
+.searchform{
+    justify-content: center; 
+    text-align: center;
+    align-content: center;
+}
+
+.fullscreen{
+    height: 80%;
+    width: 100%;
+}
+
+.urlCamp{
+    width: 400px;
+}

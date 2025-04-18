@@ -1,1 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;   
+}
+
+html, body {
+    font-size : 1.25rem;
+    height: 100%;
+}
+
+/* .btn{
+    transition: all 0.3s ease 0s;
+
+}
+
+.spinner{
+    display:flex; justify-content: center; margin-top: 5vh;
+}
+
+.btn:hover{
+    box-shadow: 0px 15px 20px rgba(122,22,19,1);;
+    transform: translateY(-5px);
+    background-color: white;
+    color: black;
+} */
