@@ -1,13 +1,20 @@
 from httpx import AsyncClient
 
 async def sentToAnalysis(url: str):
-    report = {}
-    headerReport = await checkHeaders(url)
-    
-    return headerReport
+    try:
+        headerReport = await checkHeaders(url)
+        
+        return headerReport
+    except Exception as E:
+        raise E
+        
 
 async def checkHeaders(url: str):
-    client = AsyncClient()
-    response = await client.get(url)
+    try:
+        client = AsyncClient()
+        response = await client.get(url)
 
-    return response.headers 
+        return response.headers 
+    except Exception as E:
+        raise E
+        

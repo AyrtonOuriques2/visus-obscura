@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from analysis.core import sentToAnalysis
 
@@ -18,5 +18,9 @@ app.add_middleware(
 
 @app.post("/")
 async def analyse(url: str = Body(... , embed=True)):
-    report = await sentToAnalysis(url)
-    return report
+    try:
+        report = await sentToAnalysis(url)
+        return {"status": "success", "report": report}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
