@@ -58,7 +58,7 @@ IDEAL_HEADERS = {
 }
 
 
-def build_error_report(header, value):
+def build_error_report(header: str, value: str):
     return {
         "value": value,
         "ideal": IDEAL_HEADERS[header]['ideal'],
