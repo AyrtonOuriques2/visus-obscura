@@ -2,16 +2,8 @@ import ssl
 import socket
 from datetime import datetime
 
-from urllib.parse import urlparse
-
-def extract_hostname(url: str) -> str:
-    parsed = urlparse(url)
-    if (not parsed.hostname):
-        raise Exception("Error fetching hostname")
-    return parsed.hostname
 
 async def certificateCheck(url: str):
-    url = extract_hostname(url)
     obj = ssl.create_default_context()
     try:
         with socket.create_connection((url, 443), timeout=5) as sock:
