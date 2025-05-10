@@ -71,7 +71,7 @@ async def ssl_tlsCheck(url : str):
             data = json.load(f)
         
         os.remove("output.json")
-        return data['scanResult']
+        return data['scanResult'][0]
     except subprocess.CalledProcessError:
         raise Exception("Error running testssl.sh")
     except FileNotFoundError:

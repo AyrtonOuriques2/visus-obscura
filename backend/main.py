@@ -16,6 +16,9 @@ app.add_middleware(
     allow_headers=["*"],             
 )
 
+#todo one route for each service
+#better payload deconstruction
+
 @app.post("/")
 async def analyse(url: str = Body(... , embed=True)):
     try:

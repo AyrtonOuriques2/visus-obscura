@@ -3,10 +3,11 @@ import socket
 from datetime import datetime
 
 
-async def certificateCheck(url: str):
+async def certificateCheck(ip: str, url: str):
     obj = ssl.create_default_context()
+    ip = ip.strip("[]")
     try:
-        with socket.create_connection((url, 443), timeout=5) as sock:
+        with socket.create_connection((ip, 443), timeout=5) as sock:
             with obj.wrap_socket(sock, server_hostname=url) as wpsock:
                 cert = wpsock.getpeercert()
                 
@@ -21,6 +22,7 @@ async def certificateCheck(url: str):
                     now = datetime.now()
                     return {
                         "hostname" : url,
+                        "ip" : ip,
                         "https_supported": True,
                         "cert_present": True,
                         "valid_now": not_before <= now <= not_after,
