@@ -1,7 +1,9 @@
-<form  class="searchform fullscreen">
-    <h5 class="text">Analyse URL</h5>
-    <div style="margin-top: 8px;">
-      <input [(ngModel)]="urlToSearch" class="urlCamp" type="text" (keyup.enter)="analyseUrl()" name="setSearch" placeholder="URL">
-    </div>
-    <button style="margin-top: 16px;" type="submit" (click)="analyseUrl()">Analyse</button>
-</form>
+<div class="eyesocket">
+  <div #eye class='eye'></div>
+</div>
+<div class="search">
+  <input class="searchinput" [(ngModel)]="urlToSearch" type="text" (keyup.enter)="analyseUrl()" name="setSearch" placeholder="URL">
+  <button class="searchbutton" (click)="analyseUrl()">
+    <mat-icon>search</mat-icon>
+  </button>
+</div>
