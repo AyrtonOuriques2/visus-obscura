@@ -24,9 +24,10 @@ async def sentToAnalysis(url: str):
     if not pattern.match(url):
         raise Exception('Please try a valid url')
     try:
-        ##headerReport = await checkHeaders(url)
+        ##headerReport = await checkHeaders(parsedUrl)
         ##httpsReport = await certificateCheck(parsedUrl)
         ssl_tlsReport = await ssl_tlsCheck(parsedUrl)
+        return ssl_tlsReport
     except Exception as E:
         raise E
         

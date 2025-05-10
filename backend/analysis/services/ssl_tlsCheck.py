@@ -43,6 +43,41 @@
     
 #     parse_scan_result(results, start, end)
 
+import json
+import os
+import subprocess
+
+
+async def ssl_tlsCheck(url : str):
+    #todo: add select frontend options for this
+    #manage json return better, multiple requests, etc
+    
+    cmd = [
+        './analysis/services/testssl.sh/testssl.sh',
+        '-s',
+        '-p',
+        '-6',
+        '--ip','one',
+        '--sneaky',
+        '--ids-friendly',
+        '--jsonfile-pretty', "output.json",
+        url
+    ]
+
+
+    try:
+        subprocess.run(cmd,check=True)
+        with open('output.json', 'r') as f:
+            data = json.load(f)
+        
+        os.remove("output.json")
+        return data['scanResult']
+    except subprocess.CalledProcessError:
+        raise Exception("Error running testssl.sh")
+    except FileNotFoundError:
+        raise Exception("JSON result file not found.")
+    except json.JSONDecodeError:
+        raise Exception("Could not decode JSON.")
 
 
 
