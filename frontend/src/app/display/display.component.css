@@ -1,0 +1,44 @@
+.analysis-container {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+  padding: 1rem;
+}
+
+.analysis-card {
+  padding: 1rem;
+  background: black !important;
+  color:white !important;
+
+}
+
+.vuln-found {
+  color: red;
+  font-weight: bold;
+}
+
+.vuln-clear {
+  color: green;
+}
+
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 3s ease forwards;
+}
+
+.error {
+  color: #b00020;
+  margin-bottom: 0.5em;
+}
+
+.explanation {
+  font-size: 0.85em;
+  color: #b00020;
+  margin-left: 1em;
+}
+
+@keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+}

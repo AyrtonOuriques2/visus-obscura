@@ -1,0 +1,39 @@
+<div class="fade-in">
+    <div class="analysis-container">
+        <mat-card class="analysis-card">
+            <mat-card-title>Header Analysis</mat-card-title>
+            <mat-card-content>
+              <div *ngFor="let headerObj of data.report[0]">
+                <ng-container *ngFor="let key of objectKeys(headerObj)">
+                  <div [ngClass]="{ 'error': headerObj[key].error }">
+                    <strong>{{ key }}:</strong> {{ headerObj[key].value }}
+                    <div *ngIf="headerObj[key].error" class="explanation">
+                      ⚠️ <em>{{ headerObj[key].explanation }}</em>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </mat-card-content>
+        </mat-card>
+      
+        <!-- <mat-card class="analysis-card">
+          <mat-card-title>Certificate Verification</mat-card-title>
+          <mat-card-content>
+            <div *ngFor="let cert of certificateData">
+              <strong>{{ cert.label }}:</strong> {{ cert.value }}
+            </div>
+          </mat-card-content>
+        </mat-card>
+      
+        <mat-card class="analysis-card">
+          <mat-card-title>SSL/TLS Vulnerability Check</mat-card-title>
+          <mat-card-content>
+            <div *ngFor="let vuln of vulnerabilities">
+              <span [ngClass]="{ 'vuln-found': vuln.found, 'vuln-clear': !vuln.found }">
+                {{ vuln.name }} - {{ vuln.found ? 'Vulnerable' : 'Safe' }}
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card> -->
+    </div>
+</div>
