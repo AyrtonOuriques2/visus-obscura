@@ -1,39 +1,69 @@
-<div class="fade-in">
+<div class="fade-in container">
+    <div class="details-container">
+      <mat-card class="analysis-card top">
+        <mat-card-title>Information</mat-card-title>
+        <mat-card-content class="top-content">
+          <div class="top-content-column">
+            <div><strong>Hostname:</strong> {{ data.report[1].hostname }}</div>
+            <div><strong>IP Address:</strong> {{ data.report[1].ip }} </div>
+            <div><strong>HTTPS Supported:</strong> {{ data.report[1].https_supported }} </div>
+            <div><strong>Certificate Present:</strong> {{ data.report[1].cert_present }} </div>
+            <div><strong>Valid Now:</strong> {{ data.report[1].valid_now }} </div>
+            <div><strong>Expires On:</strong> {{ data.report[1].expires_on }} </div>
+            <div><strong>Expires In Days:</strong> {{ data.report[1].expires_in_days }} </div>
+          </div>
+          <div class="top-content-column">
+            <div><strong>Issued To:</strong> {{ data.report[1].issued_to }} </div>
+            <div><strong>Issued By:</strong> {{ data.report[1].issued_by }} </div>
+            <div><strong>Subject CN:</strong> {{ data.report[1].subject?.commonName }} </div>
+            <div><strong>Issuer CN:</strong> {{ data.report[1].issuer?.commonName }} </div>
+            <div><strong>Issuer Org:</strong> {{ data.report[1].issuer?.organizationName }} </div>
+            <div><strong>Issuer Country:</strong> {{ data.report[1].issuer?.countryName }}</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
     <div class="analysis-container">
         <mat-card class="analysis-card">
-            <mat-card-title>Header Analysis</mat-card-title>
+            <mat-card-title>Header Results</mat-card-title>
             <mat-card-content>
-              <div *ngFor="let headerObj of data.report[0]">
-                <ng-container *ngFor="let key of objectKeys(headerObj)">
-                  <div [ngClass]="{ 'error': headerObj[key].error }">
-                    <strong>{{ key }}:</strong> {{ headerObj[key].value }}
-                    <div *ngIf="headerObj[key].error" class="explanation">
-                      ⚠️ <em>{{ headerObj[key].explanation }}</em>
-                    </div>
+              <mat-card
+                [ngClass]="{ 'error': header.error }"
+                class="small-card"
+                *ngFor="let header of data.report[0]"
+                matTooltip="{{ header.explanation }}"
+                [matTooltipDisabled]="!header.explanation"
+              >
+                  <div>
+                    <strong>{{ header.name }}:</strong> {{ header.value ? header.value : "empty" }}
                   </div>
-                </ng-container>
-              </div>
+              </mat-card >
             </mat-card-content>
         </mat-card>
       
-        <!-- <mat-card class="analysis-card">
-          <mat-card-title>Certificate Verification</mat-card-title>
+        <mat-card class="analysis-card">
+          <mat-card-title>Security Protocols and Ciphers</mat-card-title>
           <mat-card-content>
-            <div *ngFor="let cert of certificateData">
-              <strong>{{ cert.label }}:</strong> {{ cert.value }}
-            </div>
+            <mat-card 
+            [ngClass]="{ 'error': protocol.severity != 'OK' &&  protocol.severity != 'INFO' }"
+            class="small-card" 
+            *ngFor="let protocol of data.report[2].protocols"
+            >
+              <div>
+                <strong>{{ protocol.id }}:</strong> {{ protocol.finding }}
+              </div>
+            </mat-card>
+            <mat-card 
+            [ngClass]="{ 'error': cipher.severity != 'OK' &&  cipher.severity != 'INFO' }"
+            class="small-card" 
+            *ngFor="let cipher of data.report[2].ciphers"
+            >
+              <div>
+                <strong>{{ cipher.id }}:</strong> {{ cipher.finding }}
+              </div>
+              {{cipher.cwe}}
+            </mat-card>
           </mat-card-content>
         </mat-card>
-      
-        <mat-card class="analysis-card">
-          <mat-card-title>SSL/TLS Vulnerability Check</mat-card-title>
-          <mat-card-content>
-            <div *ngFor="let vuln of vulnerabilities">
-              <span [ngClass]="{ 'vuln-found': vuln.found, 'vuln-clear': !vuln.found }">
-                {{ vuln.name }} - {{ vuln.found ? 'Vulnerable' : 'Safe' }}
-              </span>
-            </div>
-          </mat-card-content>
-        </mat-card> -->
     </div>
 </div>

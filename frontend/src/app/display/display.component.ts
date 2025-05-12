@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-display',
   imports: [
     MatCardModule,
-    CommonModule
+    CommonModule,
+    MatTooltip
   ],
   standalone: true,
   templateUrl: './display.component.html',
@@ -18,7 +20,6 @@ export class DisplayComponent {
 
   constructor() {}
 
-  objectKeys = Object.keys;
   
   ngOnInit() {
     console.log(this.data); 
