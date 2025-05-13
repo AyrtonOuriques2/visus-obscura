@@ -3,7 +3,7 @@
     top: 50%;
     left: 50%;
     transform:  translate(-50%,50%);
-    background: #07402c;
+    background: #875D25;
     height: 40px;
     border-radius: 40px;
     padding: 10px;
@@ -23,8 +23,8 @@
 }
 
 .search:hover > .searchbutton {
-  background: white;
-  color : #095138;
+  background: #095138;
+  color : #875D25;
 }
 
 .searchbutton {
@@ -33,7 +33,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #095138;
+    background: #875D25;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -53,6 +53,10 @@
     width: 0px;
     font-family: 'Times New Roman', Times, serif
 
+}
+
+::placeholder {
+  color: white;
 }
 
 .eyesocket {

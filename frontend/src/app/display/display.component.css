@@ -1,5 +1,6 @@
 mat-card-title{
   padding-bottom: 12px;
+  letter-spacing: 0.1rem;
 }
 
 .analysis-container {
@@ -20,7 +21,7 @@ mat-card-title{
 .small-card {
   padding: 0.5rem;
   margin: 8px 0px;
-  background: #131183;
+  background: #292862;
   overflow-wrap: break-word;
   transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
 }
@@ -33,7 +34,7 @@ mat-card-title{
 
 .analysis-card {
   padding: 1rem;
-  background: black ;
+  background: #52412b ;
   color:white ;
   width: 100%;
   max-width: 50vw;
@@ -58,6 +59,9 @@ mat-card-title{
   display: flex; 
   flex-direction: column; 
   padding: 0px 12px;
+  font-size: 1rem;
+  letter-spacing: 0.1rem;
+  line-height: 1.4rem;
 }
 
 
@@ -73,14 +77,9 @@ mat-card-title{
 }
 
 .error {
-  background: #b00020;
+  background: #7c0017;
 }
 
-.explanation {
-  font-size: 0.85em;
-  color: #b06f00;
-  margin-left: 1em;
-}
 
 @keyframes fadeIn {
     to {
