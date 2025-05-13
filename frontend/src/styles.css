@@ -8,8 +8,8 @@
 html, body {
     font-size : 1.25rem;
     height: 100%;
-    background-color: #1C0E00;
-    font-family: 'Times New Roman', Times, serif
+    background-color: rgb(177, 177, 177);
+    font-family: 'Times New Roman', Times, serif;
 }
 
 /* .btn{
@@ -20,7 +20,7 @@ html, body {
 .spinner{
     display:flex; justify-content: center; margin-top: 5vh;
 }
-
+s
 .btn:hover{
     box-shadow: 0px 15px 20px rgba(122,22,19,1);;
     transform: translateY(-5px);
