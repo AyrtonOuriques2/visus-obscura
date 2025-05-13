@@ -75,7 +75,7 @@
 }
 
 .eyesocket.is-loaded {
-    top: 120px;
+    top: 160px;
     left: 120px;
 }
 
@@ -118,7 +118,22 @@
     0%   { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-  
+
+
+@media (min-width: 2560px) {
+  .eyesocket{
+    width: 400px;
+    height: 400px;
+  }
+  .eyesocket.is-loaded {
+    top: 200px;
+    left: 250px;
+  }
+  .eye{
+    width: 96px;
+    height: 96px;
+  }
+}
 
 @media screen and (max-width: 680px) {
     .mobile{

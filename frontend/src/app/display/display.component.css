@@ -24,6 +24,7 @@ mat-card-title{
   background: #292862;
   overflow-wrap: break-word;
   transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
+  border-radius: 4px;
 }
 
 .small-card:hover {
@@ -39,6 +40,10 @@ mat-card-title{
   width: 100%;
   max-width: 50vw;
   font-size: 0.8rem;
+  border-width: 2px;
+  border-style: solid;
+  border-color: #826744;
+  border-radius: 4px;
 }
 
 
@@ -85,6 +90,22 @@ mat-card-title{
     to {
       opacity: 1;
     }
+}
+
+@media (min-width: 2560px) {
+  .details-container{
+      max-width: calc(100vw - 500px);
+      padding: 1rem 1rem 0 1rem;
+  }
+  .analysis-card{
+    font-size: 1.1rem;
+  }
+  .top-content-column{
+    font-size: 1.4rem;
+  }
+  mat-card-title{
+    font-size: 2rem;
+  }
 }
 
 
