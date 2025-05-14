@@ -60,6 +60,7 @@ IDEAL_HEADERS = {
 
 def build_error_report(header: str, value: str):
     return {
+        "header": header,
         "value": value,
         "ideal": IDEAL_HEADERS[header]['ideal'],
         "error": True,
@@ -67,11 +68,10 @@ def build_error_report(header: str, value: str):
     }
 
 async def try_request(url_base: str):
-    for scheme in ["","https://", "http://"]:
+    for scheme in ["", "https://", "http://"]:
         try:
             async with AsyncClient() as client:
                 response = await client.get(scheme + url_base, timeout=5)
-
             return response
         except RequestError:
             continue
@@ -80,7 +80,9 @@ async def try_request(url_base: str):
 
 async def checkHeaders(url: str):
     try:
+        url = url
         response = await try_request(url)
+        print(response.headers)
         report = []
         seen_headers = set()
 
@@ -91,7 +93,7 @@ async def checkHeaders(url: str):
 
                 if isinstance(ideal, re.Pattern):
                     if not ideal.match(value.lower()):
-                        report.insert(0, {header: build_error_report(header, value)})
+                        report.insert(0, build_error_report(header, value))
                         continue
 
                 elif isinstance(ideal, list) and header == 'content-security-policy':
@@ -99,39 +101,36 @@ async def checkHeaders(url: str):
                     missing = [ property for property in ideal if property not in directives ]
                     if missing:
                         report.insert(0, {
-                            header: {
+                                "header": header,
                                 "value": value,
                                 "ideal": ideal,
                                 "error": True,
                                 "explanation": IDEAL_HEADERS[header]['explanation'],
                                 "missing": missing
-                            }
-                        })
+                            })
                         continue
 
                 elif value.lower() != ideal:
-                    report.insert(0, {header: build_error_report(header, value)})
+                    report.insert(0, build_error_report(header, value))
                     continue
 
             report.append({
-                header: {
+                    "header": header,
                     "value": value,
                     "ideal": "",
                     "error": False,
                     "explanation": ""
-                }
-            })
+                })
 
         for header, config in IDEAL_HEADERS.items():
             if config['mandatory'] and header not in seen_headers:
                 report.insert(0, {
-                    header: {
+                        "header": header,
                         "value": "",
                         "ideal": config['ideal'],
                         "error": True,
                         "explanation": config['explanation']
-                    }
-                })
+                    })
 
         return report
 
