@@ -3,9 +3,8 @@ import socket
 from datetime import datetime
 
 
-async def certificateCheck(ip: str, url: str):
+def certificateCheck(ip: str, url: str):
     obj = ssl.create_default_context()
-    ip = ip.strip("[]")
     try:
         with socket.create_connection((ip, 443), timeout=5) as sock:
             with obj.wrap_socket(sock, server_hostname=url) as wpsock:

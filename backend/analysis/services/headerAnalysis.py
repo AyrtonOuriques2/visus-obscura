@@ -1,4 +1,3 @@
-from httpx import AsyncClient, RequestError
 import re
 
 
@@ -67,26 +66,15 @@ def build_error_report(header: str, value: str):
         "explanation": IDEAL_HEADERS[header]['explanation']
     }
 
-async def try_request(url_base: str):
-    for scheme in ["", "https://", "http://"]:
-        try:
-            async with AsyncClient() as client:
-                response = await client.get(scheme + url_base, timeout=5)
-            return response
-        except RequestError:
-            continue
-    raise Exception(f"Could not connect to {url_base} via HTTP or HTTPS")
 
 
-async def checkHeaders(url: str):
+
+def checkHeaders(headers):
     try:
-        url = url
-        response = await try_request(url)
-        print(response.headers)
         report = []
         seen_headers = set()
 
-        for header, value in response.headers.items():
+        for header, value in headers.items():
             if header in IDEAL_HEADERS:
                 ideal = IDEAL_HEADERS[header]['ideal']
                 seen_headers.add(header)

@@ -48,16 +48,16 @@ import os
 import subprocess
 
 
-async def ssl_tlsCheck(url : str):
+def ssl_tlsCheck(ip : str, url: str):
     #todo: add select frontend options for this
     #manage json return better, multiple requests, etc
+
     
     cmd = [
         './analysis/services/testssl.sh/testssl.sh',
         '-s',
         '-p',
-        '-6',
-        '--ip','one',
+        '--ip', ip, 
         '--sneaky',
         '--ids-friendly',
         '--jsonfile-pretty', "output.json",
