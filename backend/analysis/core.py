@@ -1,11 +1,16 @@
 from analysis.services.headerAnalysis import checkHeaders
 from analysis.services.certificateAnalysis import certificateCheck
 from analysis.services.ssl_tlsCheck import ssl_tlsCheck
+from analysis.services.openRedirects import redirectCheck
+from analysis.services.robotsTxt import checkRobots
+
 
 import re
 from urllib.parse import urlparse
 from httpx import AsyncClient, RequestError, AsyncHTTPTransport
 from asyncio import gather, to_thread
+
+
 
 
 
@@ -36,24 +41,28 @@ async def try_request(url_base: str):
                 )
                 if (server_addr == None):
                     raise Exception(f"Failed to get ip from {url_base}")
-                return response, server_addr[0] 
+                return response, server_addr[0], scheme 
         except RequestError:
             continue
     raise Exception(f"Could not connect to {url_base} via HTTP or HTTPS")
 
 async def sentToAnalysis(url: str):
     parsedUrl = parse(url)
-    response, serverAddr = await try_request(parsedUrl)
+    response, serverAddr, scheme = await try_request(parsedUrl)
 
     try:
         headerReport = checkHeaders(response.headers)
 
-        ssl_tlsReport, httpsReport = await gather(
+        robotsReport, redirectReport, ssl_tlsReport, httpsReport = await gather(
+            checkRobots(scheme + parsedUrl),
+            redirectCheck(scheme + parsedUrl),
             to_thread(ssl_tlsCheck, wrap_ipv6(serverAddr), parsedUrl),
             to_thread(certificateCheck, serverAddr, parsedUrl)
         )
 
         report = [
+            robotsReport,
+            redirectReport,
             headerReport,
             httpsReport,
             ssl_tlsReport
