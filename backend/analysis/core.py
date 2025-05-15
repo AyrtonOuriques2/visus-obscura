@@ -3,14 +3,16 @@ from analysis.services.certificateAnalysis import certificateCheck
 from analysis.services.ssl_tlsCheck import ssl_tlsCheck
 from analysis.services.openRedirects import redirectCheck
 from analysis.services.robotsTxt import checkRobots
+from analysis.services.exposedFiles import checkOpenFiles
+from analysis.services.openPanels import checkPanels
+
+
 
 
 import re
 from urllib.parse import urlparse
 from httpx import AsyncClient, RequestError, AsyncHTTPTransport
 from asyncio import gather, to_thread
-
-
 
 
 
@@ -47,13 +49,18 @@ async def try_request(url_base: str):
     raise Exception(f"Could not connect to {url_base} via HTTP or HTTPS")
 
 async def sentToAnalysis(url: str):
+    #todo flag to check all ips of an domain (will take long time)
+
     parsedUrl = parse(url)
+
     response, serverAddr, scheme = await try_request(parsedUrl)
 
     try:
         headerReport = checkHeaders(response.headers)
 
-        robotsReport, redirectReport, ssl_tlsReport, httpsReport = await gather(
+        panelsReport, filesReport, robotsReport, redirectReport, ssl_tlsReport, httpsReport = await gather(
+            checkPanels(scheme + parsedUrl),
+            checkOpenFiles(scheme + parsedUrl),
             checkRobots(scheme + parsedUrl),
             redirectCheck(scheme + parsedUrl),
             to_thread(ssl_tlsCheck, wrap_ipv6(serverAddr), parsedUrl),
@@ -61,6 +68,8 @@ async def sentToAnalysis(url: str):
         )
 
         report = [
+            panelsReport,
+            filesReport,
             robotsReport,
             redirectReport,
             headerReport,
@@ -71,4 +80,31 @@ async def sentToAnalysis(url: str):
 
     except Exception as E:
         raise E
+
+
+#force provided ip dns resolve
+# ConnectError("[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: IP address mismatch, 
+# certificate is not valid for '20.201.28.151'
+
+# from httpx import AsyncClient, AsyncHTTPTransport
+# import socket
+
+# class CustomResolver:
+#     def __init__(self, ip):
+#         self.ip = ip
+
+#     async def resolve(self, host, port=0, family=socket.AF_INET):
+#         return [{
+#             "hostname": host,
+#             "host": self.ip,
+#             "port": port,
+#             "family": family,
+#             "proto": 0,
+#             "flags": socket.AI_NUMERICHOST,
+#         }]
+
+# transport = AsyncHTTPTransport(resolver=CustomResolver("20.201.28.151"))
+
+# async with AsyncClient(transport=transport, timeout=5) as client:
+#     r = await client.get("https://example.com/some_path")
         
