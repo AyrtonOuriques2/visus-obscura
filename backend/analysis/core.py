@@ -5,23 +5,19 @@ from analysis.services.openRedirects import redirectCheck
 from analysis.services.robotsTxt import checkRobots
 from analysis.services.exposedFiles import checkOpenFiles
 from analysis.services.openPanels import checkPanels
-
-
+from analysis.services.stackAnalysis import detectStack
 
 
 import re
+from socket import gethostbyname
 from urllib.parse import urlparse
 from httpx import AsyncClient, RequestError, AsyncHTTPTransport
 from asyncio import gather, to_thread
 
 
-
-
 pattern = re.compile(r'^(https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/.*)?$')
 
 def parse(url: str) -> str:
-    if not url.startswith(('http://', 'https://')):
-        return url
     parsed = urlparse(url)
     if (not parsed.hostname):
         raise Exception("Error fetching hostname")
@@ -42,7 +38,8 @@ async def try_request(url_base: str):
                     network_stream.get_extra_info("server_addr") if network_stream else None
                 )
                 if (server_addr == None):
-                    raise Exception(f"Failed to get ip from {url_base}")
+                    server_addr = gethostbyname(url_base)
+                    return response, server_addr, scheme 
                 return response, server_addr[0], scheme 
         except RequestError:
             continue
@@ -50,15 +47,21 @@ async def try_request(url_base: str):
 
 async def sentToAnalysis(url: str):
     #todo flag to check all ips of an domain (will take long time)
+    if url.startswith(('http://', 'https://')):
+        url = url.removeprefix("http://")
+        url = url.removeprefix("https://")
 
-    parsedUrl = parse(url)
 
-    response, serverAddr, scheme = await try_request(parsedUrl)
+    response, serverAddr, scheme = await try_request(url)
+
+    parsedUrl = parse(scheme + url)
+
 
     try:
         headerReport = checkHeaders(response.headers)
 
-        panelsReport, filesReport, robotsReport, redirectReport, ssl_tlsReport, httpsReport = await gather(
+        stackReport, panelsReport, filesReport, robotsReport, redirectReport, ssl_tlsReport, httpsReport = await gather(
+            to_thread(detectStack, response.text),
             checkPanels(scheme + parsedUrl),
             checkOpenFiles(scheme + parsedUrl),
             checkRobots(scheme + parsedUrl),
@@ -67,15 +70,17 @@ async def sentToAnalysis(url: str):
             to_thread(certificateCheck, serverAddr, parsedUrl)
         )
 
-        report = [
-            panelsReport,
-            filesReport,
-            robotsReport,
-            redirectReport,
-            headerReport,
-            httpsReport,
-            ssl_tlsReport
-        ]
+        report = {
+            "stackReport" : stackReport,
+            "panelsReport" : panelsReport,
+            "filesReport" : filesReport,
+            "robotsReport" : robotsReport,
+            "redirectReport" : redirectReport,
+            "headerReport" : headerReport,
+            "httpsReport": httpsReport,
+            "ssl_tlsReport" : ssl_tlsReport
+        }
+
         return report
 
     except Exception as E:

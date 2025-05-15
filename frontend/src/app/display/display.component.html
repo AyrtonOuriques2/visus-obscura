@@ -4,21 +4,21 @@
         <mat-card-title style="text-align: center;">Information</mat-card-title>
         <mat-card-content class="top-content">
           <div class="top-content-column">
-            <div><strong>Hostname:</strong> {{ data.report[1].hostname }}</div>
-            <div><strong>IP Address:</strong> {{ data.report[1].ip }} </div>
-            <div><strong>HTTPS Supported:</strong> {{ data.report[1].https_supported }} </div>
-            <div><strong>Certificate Present:</strong> {{ data.report[1].cert_present }} </div>
-            <div><strong>Valid Now:</strong> {{ data.report[1].valid_now }} </div>
-            <div><strong>Expires On:</strong> {{ data.report[1].expires_on }} </div>
-            <div><strong>Expires In Days:</strong> {{ data.report[1].expires_in_days }} </div>
+            <div><strong>Hostname:</strong> {{ data.report.httpsReport.hostname }}</div>
+            <div><strong>IP Address:</strong> {{ data.report.httpsReport.ip }} </div>
+            <div><strong>HTTPS Supported:</strong> {{ data.report.httpsReport.https_supported }} </div>
+            <div><strong>Certificate Present:</strong> {{ data.report.httpsReport.cert_present }} </div>
+            <div><strong>Valid Now:</strong> {{ data.report.httpsReport.valid_now }} </div>
+            <div><strong>Expires On:</strong> {{ data.report.httpsReport.expires_on }} </div>
+            <div><strong>Expires In Days:</strong> {{ data.report.httpsReport.expires_in_days }} </div>
           </div>
           <div class="top-content-column">
-            <div><strong>Issued To:</strong> {{ data.report[1].issued_to }} </div>
-            <div><strong>Issued By:</strong> {{ data.report[1].issued_by }} </div>
-            <div><strong>Subject CN:</strong> {{ data.report[1].subject?.commonName }} </div>
-            <div><strong>Issuer CN:</strong> {{ data.report[1].issuer?.commonName }} </div>
-            <div><strong>Issuer Org:</strong> {{ data.report[1].issuer?.organizationName }} </div>
-            <div><strong>Issuer Country:</strong> {{ data.report[1].issuer?.countryName }}</div>
+            <div><strong>Issued To:</strong> {{ data.report.httpsReport.issued_to }} </div>
+            <div><strong>Issued By:</strong> {{ data.report.httpsReport.issued_by }} </div>
+            <div><strong>Subject CN:</strong> {{ data.report.httpsReport.subject?.commonName }} </div>
+            <div><strong>Issuer CN:</strong> {{ data.report.httpsReport.issuer?.commonName }} </div>
+            <div><strong>Issuer Org:</strong> {{ data.report.httpsReport.issuer?.organizationName }} </div>
+            <div><strong>Issuer Country:</strong> {{ data.report.httpsReport.issuer?.countryName }}</div>
           </div>
         </mat-card-content>
       </mat-card>
@@ -30,7 +30,7 @@
               <mat-card
                 [ngClass]="{ 'error': header.error }"
                 class="small-card"
-                *ngFor="let header of data.report[0]"
+                *ngFor="let header of data.report.headerReport"
                 matTooltip="{{ header.explanation }}"
                 [matTooltipDisabled]="!header.explanation"
               >
@@ -47,7 +47,7 @@
             <mat-card 
             [ngClass]="{ 'error': protocol.severity != 'OK' &&  protocol.severity != 'INFO' }"
             class="small-card" 
-            *ngFor="let protocol of data.report[2].protocols"
+            *ngFor="let protocol of data.report.ssl_tlsReport.protocols"
             >
               <div>
                 <strong>{{ protocol.id }}:</strong> {{ protocol.finding }}
@@ -56,7 +56,7 @@
             <mat-card 
             [ngClass]="{ 'error': cipher.severity != 'OK' &&  cipher.severity != 'INFO' }"
             class="small-card" 
-            *ngFor="let cipher of data.report[2].ciphers"
+            *ngFor="let cipher of data.report.ssl_tlsReport.ciphers"
             >
               <div>
                 <strong>{{ cipher.id }}:</strong> {{ cipher.finding }}

@@ -16,7 +16,7 @@ async def checkRobots(url):
         async with AsyncClient(timeout=5) as client:
             response = await client.get(robots_url)
 
-            if response.status_code != 200:
+            if not 200 <=  response.status_code < 300:
                 return {"found": False, "status_code": response.status_code}
 
             lines = response.text.splitlines()
