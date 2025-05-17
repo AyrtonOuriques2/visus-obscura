@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatOption, MatSelect, MatSelectTrigger } from '@angular/material/select';
 import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
@@ -8,7 +10,11 @@ import { MatTooltip } from '@angular/material/tooltip';
   imports: [
     MatCardModule,
     CommonModule,
-    MatTooltip
+    MatTooltip,
+    MatFormField,
+    MatSelect,
+    MatOption,
+    MatSelectTrigger
   ],
   standalone: true,
   templateUrl: './display.component.html',
@@ -17,6 +23,7 @@ import { MatTooltip } from '@angular/material/tooltip';
 export class DisplayComponent {
 
   @Input() data: any;
+  selectedReportType = "protocols"
 
   constructor() {}
 

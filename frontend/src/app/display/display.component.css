@@ -1,6 +1,7 @@
 mat-card-title{
   padding-bottom: 12px;
   letter-spacing: 0.1rem;
+  padding-right: 12px;
 }
 
 .analysis-container {
@@ -33,6 +34,59 @@ mat-card-title{
   color: black;
 }
 
+.card-header{
+  display: flex;
+  height: 40px;
+}
+
+.dropdown{
+  height: 62px;
+}
+
+::ng-deep .dropdown .mat-mdc-form-field-infix{
+  width: auto !important;
+}
+
+::ng-deep .dropdown .mat-select-trigger {
+  font-size: 16px;
+  padding: 0;
+}
+
+::ng-deep .dropdown .mdc-text-field {
+  width: 36px;
+  padding: 0;
+  height: 36px !important;            
+  display: flex !important;
+  align-items: center !important;
+  border-radius: 12px !important;
+}
+
+/* 
+::ng-deep .dropdown .mdc-text-field:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  transition: background-color 150ms ease-in-out;
+} */
+
+::ng-deep .cdk-overlay-pane {
+  width: auto !important;
+}
+
+::ng-deep .cdk-overlay-pane [role="listbox"] {
+  border-radius: 12px !important;
+  animation: dropdownFadeIn 400ms ease-out;
+  transform-origin: top center;
+}
+
+::ng-deep .dropdown .mat-mdc-select-value {
+  display: flex !important;
+  justify-content: center;
+}
+
+::ng-deep .dropdown .mat-mdc-select-arrow {
+  display: none !important;
+}
+
+
 .analysis-card {
   padding: 1rem;
   background: #52412b ;
@@ -52,6 +106,20 @@ mat-card-title{
   display: flex;
 }
 
+.general-card{
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  border-width: 0;
+  box-shadow: none;
+}
+
+.robot-card{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  
+}
+
 .top-content{
   display: flex;
   width: 100%;
@@ -59,6 +127,7 @@ mat-card-title{
   padding: 1rem;
 
 }
+
 
 .top-content-column{
   display: flex; 
@@ -85,11 +154,33 @@ mat-card-title{
   background: #7c0017;
 }
 
+.vuln-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 16px;
+}
+
+.vuln-inner-list{
+  padding: 4px;
+}
+
 
 @keyframes fadeIn {
     to {
       opacity: 1;
     }
+}
+
+
+@keyframes dropdownFadeIn {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
 }
 
 @media (min-width: 2560px) {
@@ -108,8 +199,14 @@ mat-card-title{
   }
 }
 
+@media screen and (max-width: 1062px) {
+    .card-header{
+      height: auto;
+    }
+}
 
-@media screen and (max-width: 680px) {
+
+@media screen and (max-width: 840px) {
     .analysis-container {
       grid-template-columns: 1fr;
       display: block;
@@ -130,5 +227,11 @@ mat-card-title{
       overflow-x: hidden;
       flex-direction: row;
       flex-wrap: wrap;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .top-content{
+      display: block;
     }
 }

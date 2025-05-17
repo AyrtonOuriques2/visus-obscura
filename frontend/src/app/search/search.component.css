@@ -135,7 +135,7 @@
   }
 }
 
-@media screen and (max-width: 680px) {
+@media screen and (max-width: 840px) {
     .mobile{
         margin-bottom: 240px;
     }
@@ -144,3 +144,4 @@
         left: 50%
     }
 }
+

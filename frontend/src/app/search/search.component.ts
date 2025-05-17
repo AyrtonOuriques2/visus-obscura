@@ -50,9 +50,10 @@ export class SearchComponent {
       this.data = {
         "status": "success",
         "report": {
-          "stackReport": {
-            "Web Components": "2.2.10"
-          },
+          "stackReport": [{
+            "name" : "Web Components", 
+            "version": "2.2.10"
+          }],
           "panelsReport": [
             "administrator",
             "cpanel",
@@ -82,7 +83,6 @@ export class SearchComponent {
               "/listings*?q=*",
               "/mod/*",
               "/mod?*",
-              "/admin/*",
               "/reactions?*",
               "/async_info/base_data",
               "/ahoy/*",

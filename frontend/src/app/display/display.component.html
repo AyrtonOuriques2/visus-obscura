@@ -1,24 +1,35 @@
 <div class="fade-in container">
     <div class="details-container">
       <mat-card class="analysis-card top">
-        <mat-card-title style="text-align: center;">Information</mat-card-title>
+        <mat-card-title>Information</mat-card-title>
         <mat-card-content class="top-content">
           <div class="top-content-column">
             <div><strong>Hostname:</strong> {{ data.report.httpsReport.hostname }}</div>
             <div><strong>IP Address:</strong> {{ data.report.httpsReport.ip }} </div>
             <div><strong>HTTPS Supported:</strong> {{ data.report.httpsReport.https_supported }} </div>
             <div><strong>Certificate Present:</strong> {{ data.report.httpsReport.cert_present }} </div>
-            <div><strong>Valid Now:</strong> {{ data.report.httpsReport.valid_now }} </div>
-            <div><strong>Expires On:</strong> {{ data.report.httpsReport.expires_on }} </div>
-            <div><strong>Expires In Days:</strong> {{ data.report.httpsReport.expires_in_days }} </div>
+            <div *ngIf="data.report.httpsReport.cert_present">
+              <div><strong>Valid Now:</strong> {{ data.report.httpsReport.valid_now }} </div>
+              <div><strong>Expires On:</strong> {{ data.report.httpsReport.expires_on }} </div>
+              <div><strong>Expires In Days:</strong> {{ data.report.httpsReport.expires_in_days }} </div>
+            </div>
           </div>
-          <div class="top-content-column">
+          <div class="top-content-column" *ngIf="data.report.httpsReport.cert_present">
             <div><strong>Issued To:</strong> {{ data.report.httpsReport.issued_to }} </div>
             <div><strong>Issued By:</strong> {{ data.report.httpsReport.issued_by }} </div>
             <div><strong>Subject CN:</strong> {{ data.report.httpsReport.subject?.commonName }} </div>
             <div><strong>Issuer CN:</strong> {{ data.report.httpsReport.issuer?.commonName }} </div>
             <div><strong>Issuer Org:</strong> {{ data.report.httpsReport.issuer?.organizationName }} </div>
             <div><strong>Issuer Country:</strong> {{ data.report.httpsReport.issuer?.countryName }}</div>
+          </div>
+          <div class="top-content-column">
+            <h3 style="padding: 12px;">Detected tech stack:</h3>
+            <div *ngFor="let tech of data.report.stackReport">
+              <div><strong>{{ tech.name }} :</strong> {{tech.version}}</div>
+            </div>
+            <div *ngIf="!data.report.stackReport">
+              No stack detected
+            </div>
           </div>
         </mat-card-content>
       </mat-card>
@@ -42,27 +53,124 @@
         </mat-card>
       
         <mat-card class="analysis-card">
-          <mat-card-title>Security Protocols and Ciphers</mat-card-title>
-          <mat-card-content>
-            <mat-card 
-            [ngClass]="{ 'error': protocol.severity != 'OK' &&  protocol.severity != 'INFO' }"
-            class="small-card" 
-            *ngFor="let protocol of data.report.ssl_tlsReport.protocols"
-            >
-              <div>
-                <strong>{{ protocol.id }}:</strong> {{ protocol.finding }}
-              </div>
-            </mat-card>
-            <mat-card 
-            [ngClass]="{ 'error': cipher.severity != 'OK' &&  cipher.severity != 'INFO' }"
-            class="small-card" 
-            *ngFor="let cipher of data.report.ssl_tlsReport.ciphers"
-            >
-              <div>
-                <strong>{{ cipher.id }}:</strong> {{ cipher.finding }}
-              </div>
-              {{cipher.cwe}}
-            </mat-card>
+          <div class="card-header">
+            <div [ngSwitch]="selectedReportType">
+              <mat-card-title *ngSwitchCase="'protocols'">Security Protocols and Ciphers</mat-card-title>
+              <mat-card-title *ngSwitchCase="'vuln'">General checks</mat-card-title>
+            </div>
+            <mat-form-field  class="dropdown">
+              <mat-select [(value)]="selectedReportType" disableOptionCentering>
+                <mat-select-trigger>
+                  &#x25BC; 
+                </mat-select-trigger>
+                <mat-option value="protocols">SSL/TLS/Ciphers</mat-option>
+                <mat-option value="vuln">Vulnerabilities</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <mat-card-content 
+          [ngSwitch]="selectedReportType"
+          [ngStyle]="{
+            'padding-top': selectedReportType === 'protocols' ? '8px' : '16px'
+          }">
+            <div *ngSwitchCase="'protocols'">
+              <mat-card 
+              [ngClass]="{ 'error': protocol.severity != 'OK' &&  protocol.severity != 'INFO' }"
+              class="small-card" 
+              *ngFor="let protocol of data.report.ssl_tlsReport.protocols"
+              >
+                <div>
+                  <strong>{{ protocol.id }}:</strong> {{ protocol.finding }}
+                </div>
+              </mat-card>
+              <mat-card 
+              [ngClass]="{ 'error': cipher.severity != 'OK' &&  cipher.severity != 'INFO' }"
+              class="small-card" 
+              *ngFor="let cipher of data.report.ssl_tlsReport.ciphers"
+              >
+                <div>
+                  <strong>{{ cipher.id }}:</strong> {{ cipher.finding }}
+                </div>
+                {{cipher.cwe}}
+              </mat-card>
+            </div>
+            <div *ngSwitchCase="'vuln'">
+              <mat-card class="general-card">
+                <div class="vuln-grid">
+                  <div class="small-card">
+                    <h3 >Detected panels:</h3>
+                    <div class="vuln-inner-list" *ngFor="let route of data.report.panelsReport">
+                      <strong>{{ route }}</strong>
+                    </div>
+                    <div class="vuln-inner-list" *ngIf="!data.report.panelsReport">
+                      No open panels detected
+                    </div>
+                  </div>
+                  <div class="small-card">
+                    <h3 >Detected files:</h3>
+                    <div class="vuln-inner-list" *ngFor="let file of data.report.filesReport">
+                      <strong>{{ file }}</strong>
+                    </div>
+                    <div class="vuln-inner-list" *ngIf="!data.report.filesReport">
+                      No open files detected
+                    </div>
+                  </div>
+                  <div class="small-card">
+                    <h3 >Detected open redirects:</h3>
+                    <div class="vuln-inner-list" *ngFor="let redirect of data.report.redirectReport">
+                      <strong>{{ redirect }}</strong>
+                    </div>
+                    <div class="vuln-inner-list" *ngIf="!data.report.redirectReport">
+                      No open redirects detected
+                    </div>
+                  </div>
+                  <div style="grid-column: span 3;" >
+                    <mat-card-title style="font-size: 1.2rem;">Robot.txt analysis:</mat-card-title>
+                    <div class="robot-card" *ngIf="data.report.robotsReport.found">
+                      <div class="small-card">
+                        <h3 class="vuln-inner-list" >Dissalowed paths:</h3>
+                        <div class="vuln-inner-list" *ngFor="let dissalow of data.report.robotsReport.disallowed_paths">
+                          <strong>{{ dissalow }}</strong>
+                        </div>
+                        <div class="vuln-inner-list" *ngIf="!data.report.robotsReport.disallowed_paths">
+                          No open dissalowed paths
+                        </div>
+                      </div>
+                      <div class="small-card">
+                        <h3 class="vuln-inner-list" >Suspicious paths:</h3>
+                        <div class="vuln-inner-list" *ngFor="let sus of data.report.robotsReport.suspicious_entries">
+                          <strong>{{ sus.path }} : </strong> {{sus.type}}
+                        </div>
+                        <div class="vuln-inner-list" *ngIf="!data.report.robotsReport.suspicious_entries">
+                          No suspicious paths found
+                        </div>
+                      </div>
+                      <div class="small-card">
+                        <h3 class="vuln-inner-list" >Sitemaps:</h3>
+                        <div class="vuln-inner-list" *ngFor="let map of data.report.robotsReport.sitemaps">
+                          <strong>{{ map }}</strong>
+                        </div>
+                        <div class="vuln-inner-list" *ngIf="!data.report.robotsReport.sitemaps">
+                          No sitemaps found
+                        </div>
+                      </div>
+                      <div class="small-card">
+                        <h3 class="vuln-inner-list" >User agents:</h3>
+                        <div class="vuln-inner-list" *ngFor="let agent of data.report.robotsReport.user_agents">
+                          <strong>{{ agent }} </strong>
+                        </div>
+                        <div class="vuln-inner-list" *ngIf="!data.report.robotsReport.user_agents">
+                          No user agents found
+                        </div>
+                      </div>
+                    </div>
+                  <div class="vuln-inner-list" *ngIf="!data.report.robotsReport.found">
+                    No robots.txt found
+                  </div>
+                  </div>
+                </div>
+              </mat-card>
+            </div>
           </mat-card-content>
         </mat-card>
     </div>
