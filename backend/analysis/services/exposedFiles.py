@@ -1,5 +1,7 @@
 from httpx import AsyncClient
 
+from analysis.utils.header_config import HEADERS
+
 
 paths = [
     '.env', '.git/config', 'config.php', 'config.json',
@@ -12,7 +14,7 @@ async def checkOpenFiles(base_url):
     for path in paths:
         try:
             async with AsyncClient(timeout=5) as client:
-                r = await client.get(f"{base_url}/{path}")
+                r = await client.get(f"{base_url}/{path}" , headers=HEADERS)
                 if 200 <= r.status_code < 300 and len(r.text) > 20:
                     found.append(path)
         except Exception as e:
@@ -22,4 +24,4 @@ async def checkOpenFiles(base_url):
             })
             pass
 
-    return found
+    return found if found else ""

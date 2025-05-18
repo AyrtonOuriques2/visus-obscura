@@ -1,5 +1,7 @@
 from httpx import AsyncClient
 
+from analysis.utils.header_config import HEADERS
+
 
 SENSITIVE_KEYWORDS = [
     "admin", "backup", "config", "private", "secret", "test",
@@ -14,7 +16,7 @@ async def checkRobots(url):
     robots_url = url + "/robots.txt"
     try:
         async with AsyncClient(timeout=5) as client:
-            response = await client.get(robots_url)
+            response = await client.get(robots_url, headers=HEADERS)
 
             if not 200 <=  response.status_code < 300:
                 return {"found": False, "status_code": response.status_code}
@@ -35,9 +37,10 @@ async def checkRobots(url):
 
                 if line.lower().startswith("disallow:"):
                     path = line.split(":", 1)[1].strip()
-                    disallowed.append(path)
                     if is_suspicious(path):
                         suspicious.append({"type": "Disallow", "path": path})
+                    else:
+                        disallowed.append(path)
                     if "*" in path:
                         has_wildcards = True
                     if "$" in path:
@@ -45,9 +48,10 @@ async def checkRobots(url):
 
                 elif line.lower().startswith("allow:"):
                     path = line.split(":", 1)[1].strip()
-                    allowed.append(path)
                     if is_suspicious(path):
                         suspicious.append({"type": "Allow", "path": path})
+                    else:
+                        allowed.append(path)
                     if "*" in path:
                         has_wildcards = True
                     if "$" in path:
@@ -64,13 +68,13 @@ async def checkRobots(url):
             return {
                 "found": True,
                 "status_code": response.status_code,
-                "user_agents": user_agents,
-                "disallowed_paths": disallowed,
-                "allowed_paths": allowed,
-                "sitemaps": sitemaps,
+                "user_agents": user_agents if user_agents else "",
+                "disallowed_paths": disallowed if disallowed else "",
+                "allowed_paths": allowed if allowed else "",
+                "sitemaps": sitemaps if sitemaps else "",
                 "uses_wildcards": has_wildcards,
                 "uses_end_anchors": has_end_anchors,
-                "suspicious_entries": suspicious
+                "suspicious_entries": suspicious if suspicious else ""
             }
 
     except Exception as e:

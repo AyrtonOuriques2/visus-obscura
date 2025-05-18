@@ -46,38 +46,45 @@
 import json
 import os
 import subprocess
+import tempfile
 
 
 def ssl_tlsCheck(ip : str, url: str):
     #todo: add select frontend options for this
     #manage json return better, multiple requests, etc
 
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as tmpfile:
+            output_path = tmpfile.name
     
     cmd = [
-        './analysis/services/testssl.sh/testssl.sh',
+        './analysis/utils/testssl.sh/testssl.sh',
         '-s',
         '-p',
         '--ip', ip, 
         '--sneaky',
         '--ids-friendly',
-        '--jsonfile-pretty', "output.json",
+        '--jsonfile-pretty', output_path,
         url
     ]
 
 
     try:
         subprocess.run(cmd,check=True)
-        with open('output.json', 'r') as f:
+        with open(output_path, 'r') as f:
             data = json.load(f)
         
-        os.remove("output.json")
         return data['scanResult'][0]
+        
     except subprocess.CalledProcessError:
         raise Exception("Error running testssl.sh")
     except FileNotFoundError:
         raise Exception("JSON result file not found.")
     except json.JSONDecodeError:
         raise Exception("Could not decode JSON.")
+
+    finally:
+        if os.path.exists(output_path):
+            os.remove(output_path)
 
 
 

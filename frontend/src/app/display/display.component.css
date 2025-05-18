@@ -28,6 +28,18 @@ mat-card-title{
   border-radius: 4px;
 }
 
+.scrollable-list-container {
+  max-height: 200px; 
+  overflow-y: auto;
+}
+
+.break-word {
+  word-wrap: break-word;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
 .small-card:hover {
   transform: translateY(-5px);
   background-color: white;

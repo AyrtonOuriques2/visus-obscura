@@ -97,28 +97,34 @@
             <div *ngSwitchCase="'vuln'">
               <mat-card class="general-card">
                 <div class="vuln-grid">
-                  <div class="small-card">
+                  <div class="small-card" style="max-height: 244px;">
                     <h3 >Detected panels:</h3>
-                    <div class="vuln-inner-list" *ngFor="let route of data.report.panelsReport">
-                      <strong>{{ route }}</strong>
+                    <div class="scrollable-list-container">
+                      <div class="vuln-inner-list" *ngFor="let route of data.report.panelsReport">
+                        <strong>{{ route }}</strong>
+                      </div>
                     </div>
                     <div class="vuln-inner-list" *ngIf="!data.report.panelsReport">
                       No open panels detected
                     </div>
                   </div>
-                  <div class="small-card">
+                  <div class="small-card" style="max-height: 244px;">
                     <h3 >Detected files:</h3>
-                    <div class="vuln-inner-list" *ngFor="let file of data.report.filesReport">
-                      <strong>{{ file }}</strong>
+                    <div class="scrollable-list-container">
+                      <div class="vuln-inner-list" *ngFor="let file of data.report.filesReport">
+                        <strong>{{ file }}</strong>
+                      </div>
                     </div>
                     <div class="vuln-inner-list" *ngIf="!data.report.filesReport">
                       No open files detected
                     </div>
                   </div>
-                  <div class="small-card">
+                  <div class="small-card" style="max-height: 244px;">
                     <h3 >Detected open redirects:</h3>
-                    <div class="vuln-inner-list" *ngFor="let redirect of data.report.redirectReport">
-                      <strong>{{ redirect }}</strong>
+                    <div class="scrollable-list-container">
+                      <div class="vuln-inner-list" *ngFor="let redirect of data.report.redirectReport">
+                        <strong>{{ redirect }}</strong>
+                      </div>
                     </div>
                     <div class="vuln-inner-list" *ngIf="!data.report.redirectReport">
                       No open redirects detected
@@ -127,19 +133,23 @@
                   <div style="grid-column: span 3;" >
                     <mat-card-title style="font-size: 1.2rem;">Robot.txt analysis:</mat-card-title>
                     <div class="robot-card" *ngIf="data.report.robotsReport.found">
-                      <div class="small-card">
+                      <div class="small-card" style="max-height: 244px;">
                         <h3 class="vuln-inner-list" >Dissalowed paths:</h3>
-                        <div class="vuln-inner-list" *ngFor="let dissalow of data.report.robotsReport.disallowed_paths">
-                          <strong>{{ dissalow }}</strong>
+                        <div class="scrollable-list-container">
+                          <div class="vuln-inner-list" *ngFor="let dissalow of data.report.robotsReport.disallowed_paths">
+                            <strong class="break-word">{{ dissalow }}</strong>
+                          </div>
                         </div>
                         <div class="vuln-inner-list" *ngIf="!data.report.robotsReport.disallowed_paths">
                           No open dissalowed paths
                         </div>
                       </div>
-                      <div class="small-card">
+                      <div class="small-card" style="max-height: 244px;">
                         <h3 class="vuln-inner-list" >Suspicious paths:</h3>
-                        <div class="vuln-inner-list" *ngFor="let sus of data.report.robotsReport.suspicious_entries">
-                          <strong>{{ sus.path }} : </strong> {{sus.type}}
+                        <div class="scrollable-list-container">
+                          <div class="vuln-inner-list" *ngFor="let sus of data.report.robotsReport.suspicious_entries">
+                            <strong>{{ sus.path }} : </strong> {{sus.type}}
+                          </div>
                         </div>
                         <div class="vuln-inner-list" *ngIf="!data.report.robotsReport.suspicious_entries">
                           No suspicious paths found
@@ -154,19 +164,21 @@
                           No sitemaps found
                         </div>
                       </div>
-                      <div class="small-card">
+                      <div class="small-card" style="max-height: 244px;">
                         <h3 class="vuln-inner-list" >User agents:</h3>
-                        <div class="vuln-inner-list" *ngFor="let agent of data.report.robotsReport.user_agents">
-                          <strong>{{ agent }} </strong>
+                        <div class="scrollable-list-container">
+                          <div class="vuln-inner-list" *ngFor="let agent of data.report.robotsReport.user_agents">
+                            <strong>{{ agent }} </strong>
+                          </div>
                         </div>
                         <div class="vuln-inner-list" *ngIf="!data.report.robotsReport.user_agents">
                           No user agents found
                         </div>
                       </div>
                     </div>
-                  <div class="vuln-inner-list" *ngIf="!data.report.robotsReport.found">
-                    No robots.txt found
-                  </div>
+                    <div class="vuln-inner-list" *ngIf="!data.report.robotsReport.found">
+                      No robots.txt found
+                    </div>
                   </div>
                 </div>
               </mat-card>

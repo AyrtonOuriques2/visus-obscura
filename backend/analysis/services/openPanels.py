@@ -1,6 +1,8 @@
 import re
 from httpx import AsyncClient
 
+from analysis.utils.header_config import HEADERS
+
 common_admin_paths = [
     'admin', 'administrator', 'cpanel', 'dashboard',
     'login', 'admin/login', 'admin.php'
@@ -14,7 +16,7 @@ async def checkPanels(base_url):
     for path in common_admin_paths:
         try:
             async with AsyncClient(timeout=5, follow_redirects=True) as client:
-                r = await client.get(f"{base_url}/{path}")
+                r = await client.get(f"{base_url}/{path}" , headers=HEADERS)
                 if 200 <= r.status_code < 300 and login_keywords.search(r.text):
                     open_panels.append(path)
         except Exception as e:
@@ -24,4 +26,4 @@ async def checkPanels(base_url):
                 "msg": str(e)
             })
     
-    return open_panels
+    return open_panels if open_panels else ""

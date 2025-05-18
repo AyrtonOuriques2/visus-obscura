@@ -17,90 +17,82 @@ async def get_favicon_hash(url):
 
 
 def detectStack(html):
-    #todo Svelte, Ember, Backbone, Alpine.js, Polymer, Next.js
-    #backend frameworks
-    #redo version check to find word + any set os number.number
+    frameworks = []
+    seen_frameworks = set()
 
-    frameworks = {}
+    def add_framework(name, version):
+        if name not in seen_frameworks:
+            seen_frameworks.add(name)
+            frameworks.append({
+                "name": name,
+                "version": version
+            })
+
+    name_map = {
+        "jquery": "jQuery",
+        "angular": "AngularJs",
+        "react": "React",
+        "vue": "Vuejs",
+        "webcomponents": "Web Components",
+        "svelte": "Svelte",
+        "ember": "Ember",
+        "backbone": "Backbone",
+        "alpine": "Alpine.js",
+        "polymer": "Polymer",
+        "next": "Next.js"
+    }
 
     try:
         soup = BeautifulSoup(html, 'html.parser')
+        html_str = str(soup).lower()
+
         for script in soup.find_all("script", src=True):
             src = script['src'].lower()
-
-            if "jquery" in src and "jQuery" not in frameworks:
-                match = re.search(r"jquery(?:\.min)?[-.]?([\d.]+)\.js", src)
-                if not match:
-                    match = re.search(r"[?&]ver=([\d.]+)", src)
-                if not match:
-                    match = re.search(r"jquery@([\d.]+)", src)
-                if match:
-                    frameworks["jQuery"] = match.group(1)
-
-            elif "angular" in src:
-                match = re.search(r"angular(?:\.min)?[-.]?([\d.]+)\.js", src)
-                if not match:
-                    match = re.search(r"[?&]ver=([\d.]+)", src)
-                if not match:
-                    match = re.search(r"angular@([\d.]+)", src)
-                if match:
-                    frameworks["AngularJS"] = match.group(1)
-
-            elif "react" in src:
-                match = re.search(r"react(?:\.min)?[-.]?([\d.]+)\.js", src)
-                if not match:
-                    match = re.search(r"[?&]ver=([\d.]+)", src)
-                if not match:
-                    match = re.search(r"react@([\d.]+)", src)
-                if match:
-                    frameworks["React"] = match.group(1)
-
-            elif "vue" in src:
-                match = re.search(r"vue(?:\.runtime)?(?:\.min)?[-.]?([\d.]+)\.js", src)
-                if not match:
-                    match = re.search(r"[?&]ver=([\d.]+)", src)
-                if not match:
-                    match = re.search(r"vue@([\d.]+)", src)
-                if match:
-                    frameworks["Vue.js"] = match.group(1)
-
-            elif "webcomponents" in src:
-                match = re.search(r"webcomponents(?:\.min)?[-.]?([\d.]+)\.js", src)               
-                if not match:
-                    match = re.search(r"[?&]ver=([\d.]+)", src)        
-                if not match:
-                    match = re.search(r"webcomponentsjs@([\d.]+)", src)
-                if match:
-                    frameworks["Web Components"] = match.group(1)
-
-
-        html_str = str(soup)
-
-        if re.search(r'\bng-[a-z]+=', html_str):
-            frameworks.setdefault("AngularJS", "unknown")
-        if re.search(r'\bv-[a-z]+=', html_str):
-            frameworks.setdefault("Vue.js", "unknown")
-        if re.search(r'data-reactroot', html_str):
-            frameworks.setdefault("React", "unknown")
+            for framework in name_map:
+                if re.search(rf"(?<=[\/\-_\.@=]){framework}", src):
+                    match = re.search(r"\d+\.\d+\.\d+", src)
+                    version = match.group(0) if match else "unknown"
+                    add_framework(name_map[framework], version)
 
         ng_version_tag = soup.find(attrs={"ng-version": True})
         if ng_version_tag:
-            frameworks["Angular"] = ng_version_tag["ng-version"]
+            add_framework("Angular", ng_version_tag["ng-version"])
+        if re.search(r'\bng-[a-z]+=', html_str):
+            add_framework("Angular", "unknown")
+
+        if re.search(r'\bv-[a-z]+=', html_str):
+            add_framework("Vuejs", "unknown")
+
+        if re.search(r'data-reactroot', html_str):
+            add_framework("React", "unknown")
+
+        if re.search(r'data-svelte', html_str) or re.search(r'svelte-[a-z0-9]+', html_str):
+            add_framework("Svelte", "unknown")
+
+        if re.search(r'data-ember-extension', html_str):
+            add_framework("Ember", "unknown")
+
+        if re.search(r'\bx-data=', html_str):
+            add_framework("Alpine.js", "unknown")
+
+        if re.search(r'polymer-element', html_str) or re.search(r'polymer-', html_str):
+            add_framework("Polymer", "unknown")
+
+        if re.search(r'__next', html_str) or re.search(r'_next\/static', html_str):
+            add_framework("Next.js", "unknown")
 
         generator = soup.find("meta", attrs={"name": "generator"})
         if generator and "wordpress" in generator.get("content", "").lower():
             wp_version = re.search(r"wordpress\s*([\d.]+)", generator['content'].lower())
             if wp_version:
-                frameworks["WordPress"] = wp_version.group(1)
+                add_framework("WordPress", wp_version.group(1))
             else:
-                frameworks["WordPress"] = "unknown"
-        elif re.search(r'/wp-(content|includes|json)/', html_str):
-            frameworks["WordPress"] = "detected via file path"
-        elif re.search(r'<!--.*yoast seo plugin.*-->', html_str, re.IGNORECASE):
-            frameworks["WordPress"] = "detected via SEO comment"
-    
-    except Exception as e:
-        print(e)
-        pass
+                add_framework("WordPress", "unknown")
+        elif re.search(r'/wp-(content|includes|json)/', html_str) or \
+             re.search(r'<!--.*yoast seo plugin.*-->', html_str, re.IGNORECASE):
+            add_framework("WordPress", "unknown")
 
-    return frameworks
+    except Exception as e:
+        raise e
+
+    return frameworks if frameworks else ""
