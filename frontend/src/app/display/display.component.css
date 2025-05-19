@@ -26,11 +26,34 @@ mat-card-title{
   overflow-wrap: break-word;
   transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
   border-radius: 4px;
+
+}
+
+.small-card.robot {
+ margin: 8px;
 }
 
 .scrollable-list-container {
   max-height: 200px; 
   overflow-y: auto;
+}
+
+.scrollable-list-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-list-container::-webkit-scrollbar-track {
+  background: #202020; 
+  border-radius: 4px;
+}
+
+.scrollable-list-container::-webkit-scrollbar-thumb {
+  background-color: #575770; 
+  border-radius: 4px;
+}
+
+.scrollable-list-container::-webkit-scrollbar-thumb:hover {
+  background-color: #757579; 
 }
 
 .break-word {
@@ -71,6 +94,7 @@ mat-card-title{
   display: flex !important;
   align-items: center !important;
   border-radius: 12px !important;
+  background: #2b2216 !important;
 }
 
 /* 
@@ -83,10 +107,31 @@ mat-card-title{
   width: auto !important;
 }
 
+::ng-deep .mdc-list-item__primary-text{
+  color: white;
+}
+
+::ng-deep .mat-mdc-option-active{
+  background: #584831 !important;
+  border-radius: 12px !important;
+}
+
+::ng-deep .mdc-line-ripple{
+  display: none !important;
+}
+
+::ng-deep .mat-mdc-option-active .mdc-list-item__primary-text,
+::ng-deep .mat-mdc-option-active mat-pseudo-checkbox
+{
+  color: rgb(182, 182, 182) !important;
+  --mat-minimal-pseudo-checkbox-selected-checkmark-color:  rgb(182, 182, 182) !important;
+}
+
 ::ng-deep .cdk-overlay-pane [role="listbox"] {
   border-radius: 12px !important;
   animation: dropdownFadeIn 400ms ease-out;
   transform-origin: top center;
+  background-color: #52412B;
 }
 
 ::ng-deep .dropdown .mat-mdc-select-value {
@@ -110,6 +155,27 @@ mat-card-title{
   border-style: solid;
   border-color: #826744;
   border-radius: 4px;
+  max-height: 80vh; 
+  overflow-y: auto;
+}
+
+.analysis-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+.analysis-card::-webkit-scrollbar-track {
+  background: #3d2f21;
+  border-radius: 4px;
+}
+
+.analysis-card::-webkit-scrollbar-thumb {
+  background-color: #a0805a;
+  border-radius: 4px;
+  border: 2px solid #3d2f21;
+}
+
+.analysis-card::-webkit-scrollbar-thumb:hover {
+  background-color: #c19d6b;
 }
 
 
@@ -176,6 +242,19 @@ mat-card-title{
   padding: 4px;
 }
 
+.vuln-grid-robot{
+  grid-column: span 3;
+}
+
+.dropdown-icon {
+  line-height: unset;
+  color: white;
+  transition: transform 0.3s ease;
+}
+
+.dropdown-icon.rotate {
+  transform: rotate(180deg) translateY(-4px);;
+}
 
 @keyframes fadeIn {
     to {
@@ -215,6 +294,16 @@ mat-card-title{
     .card-header{
       height: auto;
     }
+    .vuln-grid{
+      grid-template-columns:  1fr;
+    }
+    .vuln-grid-robot{
+      grid-column: auto;
+    }
+    .robot-card{
+      grid-template-columns: 1fr;
+    }
+
 }
 
 
@@ -227,6 +316,7 @@ mat-card-title{
     .analysis-card{
       max-width: 100vw;
       margin-bottom: 1rem;
+      max-height: max-content; 
     }
     .analysis-card.top{
       max-width: 100vw;
@@ -239,6 +329,9 @@ mat-card-title{
       overflow-x: hidden;
       flex-direction: row;
       flex-wrap: wrap;
+    }
+    .scrollable-list-container{
+      max-height: max-content;
     }
 }
 

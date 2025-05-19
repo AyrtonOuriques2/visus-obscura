@@ -58,11 +58,19 @@
               <mat-card-title *ngSwitchCase="'protocols'">Security Protocols and Ciphers</mat-card-title>
               <mat-card-title *ngSwitchCase="'vuln'">General checks</mat-card-title>
             </div>
-            <mat-form-field  class="dropdown">
-              <mat-select [(value)]="selectedReportType" disableOptionCentering>
+            <mat-form-field class="dropdown">
+              <mat-select
+                [(value)]="selectedReportType"
+                (openedChange)="isDropdownOpen = $event"
+                disableOptionCentering
+              >
                 <mat-select-trigger>
-                  &#x25BC; 
+                  <mat-icon
+                    class="dropdown-icon"
+                    [ngClass]="{ 'rotate': isDropdownOpen }"
+                  >expand_more</mat-icon>
                 </mat-select-trigger>
+
                 <mat-option value="protocols">SSL/TLS/Ciphers</mat-option>
                 <mat-option value="vuln">Vulnerabilities</mat-option>
               </mat-select>
@@ -97,7 +105,7 @@
             <div *ngSwitchCase="'vuln'">
               <mat-card class="general-card">
                 <div class="vuln-grid">
-                  <div class="small-card" style="max-height: 244px;">
+                  <div [ngClass]="{ 'error': data.report.panelsReport }" class="small-card" >
                     <h3 >Detected panels:</h3>
                     <div class="scrollable-list-container">
                       <div class="vuln-inner-list" *ngFor="let route of data.report.panelsReport">
@@ -108,7 +116,7 @@
                       No open panels detected
                     </div>
                   </div>
-                  <div class="small-card" style="max-height: 244px;">
+                  <div [ngClass]="{ 'error': data.report.filesReport }" class="small-card" >
                     <h3 >Detected files:</h3>
                     <div class="scrollable-list-container">
                       <div class="vuln-inner-list" *ngFor="let file of data.report.filesReport">
@@ -119,7 +127,7 @@
                       No open files detected
                     </div>
                   </div>
-                  <div class="small-card" style="max-height: 244px;">
+                  <div [ngClass]="{ 'error': data.report.redirectReport }" class="small-card" >
                     <h3 >Detected open redirects:</h3>
                     <div class="scrollable-list-container">
                       <div class="vuln-inner-list" *ngFor="let redirect of data.report.redirectReport">
@@ -130,10 +138,10 @@
                       No open redirects detected
                     </div>
                   </div>
-                  <div style="grid-column: span 3;" >
+                  <div class="vuln-grid-robot" >
                     <mat-card-title style="font-size: 1.2rem;">Robot.txt analysis:</mat-card-title>
                     <div class="robot-card" *ngIf="data.report.robotsReport.found">
-                      <div class="small-card" style="max-height: 244px;">
+                      <div class="small-card robot" >
                         <h3 class="vuln-inner-list" >Dissalowed paths:</h3>
                         <div class="scrollable-list-container">
                           <div class="vuln-inner-list" *ngFor="let dissalow of data.report.robotsReport.disallowed_paths">
@@ -144,7 +152,7 @@
                           No open dissalowed paths
                         </div>
                       </div>
-                      <div class="small-card" style="max-height: 244px;">
+                      <div [ngClass]="{ 'error': data.report.robotsReport.suspicious_entries }" class="small-card  robot" >
                         <h3 class="vuln-inner-list" >Suspicious paths:</h3>
                         <div class="scrollable-list-container">
                           <div class="vuln-inner-list" *ngFor="let sus of data.report.robotsReport.suspicious_entries">
@@ -155,16 +163,16 @@
                           No suspicious paths found
                         </div>
                       </div>
-                      <div class="small-card">
+                      <div class="small-card  robot">
                         <h3 class="vuln-inner-list" >Sitemaps:</h3>
                         <div class="vuln-inner-list" *ngFor="let map of data.report.robotsReport.sitemaps">
-                          <strong>{{ map }}</strong>
+                          <strong class="break-word">{{ map }}</strong>
                         </div>
                         <div class="vuln-inner-list" *ngIf="!data.report.robotsReport.sitemaps">
                           No sitemaps found
                         </div>
                       </div>
-                      <div class="small-card" style="max-height: 244px;">
+                      <div class="small-card  robot" >
                         <h3 class="vuln-inner-list" >User agents:</h3>
                         <div class="scrollable-list-container">
                           <div class="vuln-inner-list" *ngFor="let agent of data.report.robotsReport.user_agents">

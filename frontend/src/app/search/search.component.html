@@ -1,12 +1,12 @@
 <div class="mobile">
-  <div class="eyesocket" [class.is-loading]="loading" [class.is-loaded]="data">
-    <img #eye class="eye" [ngClass]="{ 'hidden': loading }" src="assets/pupil.png" alt="pupil" />
-    <img class="socket-image" [ngClass]="{ 'spinner-eye': loading }"  src="assets/eye-noback.png" alt="eye socket" />
-    <img class="socket-image back" [ngClass]="{ 'spinner-eye': loading }"  src="assets/backgroundEye.png" alt="eye socket" />
+  <div class="eyesocket" (click)="clear()" [ngClass]="{ 'is-loading': loading, 'is-loaded': data }">
+    <img #eye class="eye"  [ngClass]="{ 'hidden': loading }" src="assets/pupil.png"/>
+    <img class="socket-image"  [ngClass]="{ 'spinner-eye': loading }"  src="assets/eye-noback.png"/>
+    <img class="socket-image back" [ngClass]="{ 'spinner-eye': loading }"  src="assets/backgroundEye.png"/>
 
   </div>
   
-  <div class="search" [class.is-loading]="loading" *ngIf="!data">
+  <div class="search" [ngClass]="{ 'is-loading': loading }" *ngIf="!data">
     <input class="searchinput" [(ngModel)]="urlToSearch" type="text" (keyup.enter)="analyseUrl()" name="setSearch" placeholder="URL">
     <button class="searchbutton" (click)="analyseUrl()">
       <mat-icon>search</mat-icon>

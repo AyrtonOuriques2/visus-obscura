@@ -27,6 +27,11 @@ export class SearchComponent {
 
   constructor(private apiService: ApiService, private renderer: Renderer2){}
 
+  clear(){
+    this.data = '';
+    this.urlToSearch = '';
+  }
+
   analyseUrl() {
     this.loading = true;
     // this.apiService.analyseUrl(this.urlToSearch).pipe(

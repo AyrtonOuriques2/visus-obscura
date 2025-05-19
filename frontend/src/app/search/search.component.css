@@ -60,6 +60,7 @@
 }
 
 .eyesocket {
+    z-index: 2;
     position: absolute;
     top: 30%;
     left: 50%;
@@ -68,6 +69,7 @@
     height: 200px;
     overflow: hidden;
     transition: all 1.5s ease;
+    pointer-events: none;
 }
 
 .eyesocket.is-loading {
@@ -77,8 +79,9 @@
 .eyesocket.is-loaded {
     top: 160px;
     left: 120px;
+    pointer-events: auto;
+    cursor: pointer;
 }
-
 
 .socket-image {
     position: absolute;
