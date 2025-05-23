@@ -15,16 +15,47 @@ REDIRECT_PAYLOADS = [
 
 sem = Semaphore(5)
 
-async def test_single_payload(client, base_url, param, payload, override_param_name=None):
+async def test_single_php_payload(client, base_url, param, payload):
+    async with sem:
+        await sleep(1)
+
+        test_url = f"{base_url.rstrip('/')}/{param}"
+        
+        try:
+            response = await client.get(test_url, headers=HEADERS)
+            if 200 <= response.status_code < 300:
+                for override_param in ["redirect", "url"]:
+                    full_url = f"{test_url}?{override_param}={payload}"
+                    response = await client.get(full_url, headers=HEADERS)
+                    location = response.headers.get("location", "")
+                    if (
+                        response.status_code in (301, 302)
+                        and location
+                        and "evil.com" in location
+                        and len(location) <= 25
+                    ):
+                        return {
+                            "param": param,
+                            "payload": payload,
+                            "vulnerable": True,
+                            "payload_url": full_url,
+                            "redirect_location": location
+                        }
+        except Exception as e:
+            return {
+                "param": param,
+                "payload": payload,
+                "error": str(e)
+            }
+
+        return None
+
+async def test_single_payload(client, base_url, param, payload):
     async with sem:
 
         await sleep(1)
-        print("Redirect Request")
 
-        if param.endswith('.php'):
-            test_url = f"{base_url.rstrip('/')}/{param}?{override_param_name}={payload}"
-        else:
-            test_url = f"{base_url}?{param}={payload}"
+        test_url = f"{base_url}?{param}={payload}"
         
         try:
             response = await client.get(test_url, headers=HEADERS)
@@ -58,11 +89,17 @@ async def redirectCheck(base_url: str):
         tasks = []
 
         for param in REDIRECT_PARAMS:
-            for payload in REDIRECT_PAYLOADS:
-                if param.endswith('.php'):
-                    tasks.append(test_single_payload(client, base_url, param, payload, override_param_name="redirect"))
-                    tasks.append(test_single_payload(client, base_url, param, payload, override_param_name="url"))
-                else:
+            if param.endswith('.php'):
+                test_url = f"{base_url.rstrip('/')}/{param}"
+                try:
+                    response = await client.get(test_url, headers=HEADERS)
+                    if 200 <= response.status_code < 300:
+                        for payload in REDIRECT_PAYLOADS:
+                            tasks.append(test_single_php_payload(client, base_url, param, payload))
+                except:
+                    continue
+            else:
+                for payload in REDIRECT_PAYLOADS:
                     tasks.append(test_single_payload(client, base_url, param, payload))
 
         responses = await gather(*tasks)

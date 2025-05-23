@@ -1,6 +1,6 @@
 import re
 from httpx import AsyncClient
-from asyncio import sleep
+from asyncio import gather, Semaphore, sleep
 
 from analysis.utils.header_config import HEADERS
 
@@ -16,25 +16,50 @@ common_admin_paths = [
     'wp-admin', 'wp-login', 'typo3', 'admin/login.html'
 ]
 
-login_keywords = re.compile(r'login|sign\s?in|admin panel|authentication', re.IGNORECASE)
+login_keywords = re.compile(
+    r'login|log-in|sign[\-_ ]?in|signin|auth|authenticate|authentication|account|user|users|session|admin|dashboard|access|portal',
+    re.IGNORECASE
+)
 
-async def checkPanels(base_url):
-    open_panels = []
-    
-    for path in common_admin_paths:
-        print("Panels request")
+
+sem = Semaphore(2)
+
+async def test_single_payload(client, base_url, path):
+    async with sem:
+        await sleep(1)
+
         try:
-            async with AsyncClient(timeout=5, follow_redirects=True) as client:
-                r = await client.get(f"{base_url}/{path}" , headers=HEADERS)
-                if 200 <= r.status_code < 300 and login_keywords.search(r.text):
-                    open_panels.append(path)
+            r = await client.get(f"{base_url}/{path}" , headers=HEADERS)
+
+            if r.status_code in (301,302):
+                target = r.headers.get("location", "")
+                if login_keywords.search(target):
+                    return f"{path} → {target}"
+            
+
+            if 200 <= r.status_code < 300 and login_keywords.search(r.text):
+                return path
         except Exception as e:
-            open_panels.append({
+            return{
                 "path": path,
                 "error": True,
                 "msg": str(e)
-            })
+            }
+        return None
 
-        await sleep(1) 
+async def checkPanels(base_url):
+    open_panels = []
+
+    async with AsyncClient(timeout=5) as client:
+        tasks = []
+        for path in common_admin_paths:
+            tasks.append(test_single_payload(client, base_url, path))
+
+        response = await gather(*tasks)
     
+    for res in response:
+        if res:
+            open_panels.append(res)
+
     return open_panels if open_panels else ""
+

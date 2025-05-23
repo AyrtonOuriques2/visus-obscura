@@ -34,7 +34,7 @@ def wrap_ipv6(address: str) -> str:
 async def try_request(url_base: str):
     for scheme in ["", "https://", "http://"]:
         try:
-            async with AsyncClient(transport=AsyncHTTPTransport(local_address="0.0.0.0")) as client:
+            async with AsyncClient(transport=AsyncHTTPTransport(local_address="0.0.0.0"), follow_redirects=True) as client:
                 response = await client.get(scheme + url_base, timeout=5, headers=HEADERS)
                 network_stream = response.extensions.get("network_stream")
                 server_addr = (
@@ -48,12 +48,12 @@ async def try_request(url_base: str):
             continue
     raise Exception(f"Could not connect to {url_base} via HTTP or HTTPS")
 
-async def timed(name, coro):
-    start = time.perf_counter()
-    result = await coro
-    end = time.perf_counter()
-    print(f"{name} took {end - start:.2f} seconds")
-    return result
+# async def timed(name, coro):
+#     start = time.perf_counter()
+#     result = await coro
+#     end = time.perf_counter()
+#     print(f"{name} took {end - start:.2f} seconds")
+#     return result
 
 async def sentToAnalysis(url: str):
     #todo flag to check all ips of an domain (will take long time)
@@ -66,21 +66,24 @@ async def sentToAnalysis(url: str):
 
 
     response, serverAddr, scheme = await try_request(url)
+
+    #print("Code:", response.status_code)
     
-    parsedUrl = parse(scheme + url)
+    parsedUrl = parse(str(response.url))
 
+    #print(scheme + parsedUrl)
 
-    try:
+    try:  
         headerReport = checkHeaders(response.headers)
 
         stackReport, panelsReport, filesReport, robotsReport, redirectReport, ssl_tlsReport, httpsReport = await gather(
-            timed("detectStack", to_thread(detectStack, response.text)),
-            timed("checkPanels", checkPanels(scheme + parsedUrl)),
-            timed("checkOpenFiles", checkOpenFiles(scheme + parsedUrl)),
-            timed("checkRobots", checkRobots(scheme + parsedUrl)),
-            timed("redirectCheck", redirectCheck(scheme + parsedUrl)),
-            timed("ssl_tlsCheck", to_thread(ssl_tlsCheck, wrap_ipv6(serverAddr), parsedUrl)),
-            timed("certificateCheck", to_thread(certificateCheck, serverAddr, parsedUrl))
+            to_thread(detectStack, response.text),
+            checkPanels(scheme + parsedUrl),
+            checkOpenFiles(scheme + parsedUrl),
+            checkRobots(scheme + parsedUrl),
+            redirectCheck(scheme + parsedUrl),
+            to_thread(ssl_tlsCheck, wrap_ipv6(serverAddr), parsedUrl),
+            to_thread(certificateCheck, serverAddr, parsedUrl)
         )
 
         report = {
