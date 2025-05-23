@@ -36,6 +36,8 @@
 
 # Python
 /backend/venv/
+/backend/dockerfile
+/backend/.dockerignore
 /backend/analysis/__pycache__/
 /backend/analysis/utils
 __pycache__/
