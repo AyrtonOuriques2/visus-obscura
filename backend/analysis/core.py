@@ -57,13 +57,16 @@ async def timed(name, coro):
 
 async def sentToAnalysis(url: str):
     #todo flag to check all ips of an domain (will take long time)
+    if not pattern.match(url):
+        raise Exception("Please type a valid url.")
+
     if url.startswith(('http://', 'https://')):
         url = url.removeprefix("http://")
         url = url.removeprefix("https://")
 
 
     response, serverAddr, scheme = await try_request(url)
-
+    
     parsedUrl = parse(scheme + url)
 
 
