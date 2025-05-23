@@ -1,8 +1,11 @@
-from asyncio import gather, Semaphore
+from asyncio import gather, Semaphore, sleep
 from httpx import AsyncClient
 from analysis.utils.header_config import HEADERS
 
-REDIRECT_PARAMS = ["next", "url", "redirect", "return", "continue", "next.php", "url.php", "redirect.php", "return.php", "continue.php"]
+REDIRECT_PARAMS = [
+    "next", "url", "redirect", "return", "continue",
+    "next.php", "url.php", "redirect.php", "return.php", "continue.php"
+]
 
 REDIRECT_PAYLOADS = [
     "https://evil.com", "//evil.com", "/\\evil.com", "///evil.com",
@@ -12,9 +15,17 @@ REDIRECT_PAYLOADS = [
 
 sem = Semaphore(5)
 
-async def test_single_payload(client, base_url, param, payload):
+async def test_single_payload(client, base_url, param, payload, override_param_name=None):
     async with sem:
-        test_url = f"{base_url}?{param}={payload}"
+
+        await sleep(1)
+        print("Redirect Request")
+
+        if param.endswith('.php'):
+            test_url = f"{base_url.rstrip('/')}/{param}?{override_param_name}={payload}"
+        else:
+            test_url = f"{base_url}?{param}={payload}"
+        
         try:
             response = await client.get(test_url, headers=HEADERS)
             location = response.headers.get("location", "")
@@ -38,17 +49,22 @@ async def test_single_payload(client, base_url, param, payload):
                 "error": str(e)
             }
 
-        return None  
+        return None
 
 async def redirectCheck(base_url: str):
     results = []
 
     async with AsyncClient(follow_redirects=False, timeout=5) as client:
-        tasks = [
-            test_single_payload(client, base_url, param, payload)
-            for param in REDIRECT_PARAMS
-            for payload in REDIRECT_PAYLOADS
-        ]
+        tasks = []
+
+        for param in REDIRECT_PARAMS:
+            for payload in REDIRECT_PAYLOADS:
+                if param.endswith('.php'):
+                    tasks.append(test_single_payload(client, base_url, param, payload, override_param_name="redirect"))
+                    tasks.append(test_single_payload(client, base_url, param, payload, override_param_name="url"))
+                else:
+                    tasks.append(test_single_payload(client, base_url, param, payload))
+
         responses = await gather(*tasks)
 
     for res in responses:
