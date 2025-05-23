@@ -6,7 +6,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:4200",
-    "https://visus-obscura.vercel.app/"
+    "https://visus-obscura.vercel.app"
 ]
 
 app.add_middleware(
