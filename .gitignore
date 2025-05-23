@@ -37,7 +37,7 @@
 # Python
 /backend/venv/
 /backend/analysis/__pycache__/
-/backend/analysis/utils/testssl.sh/
+/backend/analysis/utils
 __pycache__/
 *.pyc
 
