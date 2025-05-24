@@ -23,7 +23,7 @@ mat-card-title{
   padding: 0.5rem;
   margin: 8px 0px;
   background: #292862;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
   transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
   border-radius: 4px;
 
