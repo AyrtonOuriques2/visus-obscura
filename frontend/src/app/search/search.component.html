@@ -12,6 +12,10 @@
       <mat-icon>search</mat-icon>
     </button>
   </div>
+  
+  <div class="wait-text" [ngClass]="{ 'is-loading': loading }">
+    This may take up to a minute
+  </div>
 </div>
 
 <app-display [data]="data" *ngIf="data">
